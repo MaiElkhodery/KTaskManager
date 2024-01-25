@@ -20,13 +20,14 @@ fun Route.taskRoute() {
         post {
             val task = call.receive<Task>()
             collection.insertOne(
-                Document("_id", ObjectId())
+                Document(ID, ObjectId())
                     .append(TITLE, task.title)
                     .append(DESCRIPTION, task.description)
                     .append(START_DATE, task.startDate)
                     .append(END_DATE, task.endDate)
+                    .append(STATUS, task.status)
                     .append(PRIORITY, task.priority)
-                    .append(START_DATE, task.status)
+
             )
         }
     }
