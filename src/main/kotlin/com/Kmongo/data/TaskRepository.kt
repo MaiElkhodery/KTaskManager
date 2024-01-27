@@ -26,9 +26,9 @@ class TaskRepository : TaskInterface {
         )
     }
 
-    override suspend fun update(updatedTask: Task) {
+    override suspend fun update(updatedTask: Task): Publisher<Task>? {
 
-        collection?.replaceOne(
+        return collection?.findOneAndReplace(
             Filters.eq(ID, updatedTask._id),
             updatedTask
         )

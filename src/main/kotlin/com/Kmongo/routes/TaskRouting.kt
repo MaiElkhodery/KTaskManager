@@ -89,5 +89,20 @@ fun Route.taskRoute() {
             }
 
         }
+
+        put {
+            try {
+                val task = call.receive<Task>()
+                val updatedTask = taskRepo.update(task)
+
+                updatedTask?.collect {
+                    call.respond(HttpStatusCode.OK, "${it.title} Task is Updated")
+                }
+
+            } catch (e: Exception) {
+                call.respond(HttpStatusCode.BadRequest, "Error Occurred")
+                println(e.message)
+            }
+        }
     }
 }

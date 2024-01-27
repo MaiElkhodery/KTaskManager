@@ -5,12 +5,11 @@ import com.Kmongo.models.TaskRequest
 import com.Kmongo.utils.Priority
 import com.Kmongo.utils.Status
 import com.mongodb.reactivestreams.client.FindPublisher
-import org.bson.types.ObjectId
 import org.reactivestreams.Publisher
 
 interface TaskInterface {
     suspend fun add(task: TaskRequest)
-    suspend fun update(updatedTask: Task)
+    suspend fun update(updatedTask: Task):Publisher<Task>?
 
     suspend fun delete(id: String): Publisher<Task>?
     suspend fun get(): FindPublisher<Task>?
