@@ -1,6 +1,5 @@
 package com.Kmongo.utils
-
-const val TASK_DB="task manger"
+const val TASK_DB = "task_manger"
 const val TASK_COLLECTION = "tasks"
 const val TITLE = "title"
 const val DESCRIPTION = "description"
