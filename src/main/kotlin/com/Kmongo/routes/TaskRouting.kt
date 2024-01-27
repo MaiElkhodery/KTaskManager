@@ -1,34 +1,73 @@
 package com.Kmongo.routes
 
-import com.Kmongo.MongoDatabase
+import com.Kmongo.data.TaskRepository
 import com.Kmongo.models.Task
-import com.Kmongo.utils.*
+import com.Kmongo.models.TaskRequest
+import com.Kmongo.utils.PRIORITY
+import com.Kmongo.utils.Priority
+import com.Kmongo.utils.STATUS
+import com.Kmongo.utils.Status
+import com.mongodb.reactivestreams.client.FindPublisher
+import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
+import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import org.bson.Document
-import org.bson.types.ObjectId
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import org.litote.kmongo.coroutine.toList
 
 fun Route.taskRoute() {
+    val taskRepo = TaskRepository()
     route("/tasks") {
-        val database = MongoDatabase.CLIENT.getDatabase(TASK_DB)
-        database.createCollection(TASK_COLLECTION)
-        val collection = database.getCollection(TASK_COLLECTION)
+
         get {
 
+            try {
+
+                val priorityParam = call.request.queryParameters[PRIORITY]?.uppercase()
+                val statusParam = call.request.queryParameters[STATUS]?.uppercase()
+                val tasks: FindPublisher<Task>?
+
+                if (priorityParam != null && statusParam != null) {
+                    tasks = taskRepo.get(
+                        priority = Priority.valueOf(priorityParam),
+                        status = Status.valueOf(statusParam)
+                    )
+                } else if (priorityParam != null) {
+                    tasks = taskRepo.get(priority = Priority.valueOf(priorityParam))
+                } else if (statusParam != null) {
+                    tasks = taskRepo.get(status = Status.valueOf(statusParam))
+                } else {
+                    tasks = taskRepo.get()
+                }
+                if (tasks != null) {
+                    call.respond(tasks.limit(20).toList())
+                } else
+                    call.respond("nothing matched")
+
+            } catch (e: Exception) {
+
+                call.respond(HttpStatusCode.BadRequest,"Error Occurred")
+                println(e.message)
+
+            }
         }
         post {
-            val task = call.receive<Task>()
-            collection.insertOne(
-                Document(ID, ObjectId())
-                    .append(TITLE, task.title)
-                    .append(DESCRIPTION, task.description)
-                    .append(START_DATE, task.startDate)
-                    .append(END_DATE, task.endDate)
-                    .append(STATUS, task.status)
-                    .append(PRIORITY, task.priority)
+            withContext(Dispatchers.IO){
+                try {
 
-            )
+                    val task = call.receive<TaskRequest>()
+                    taskRepo.add(task)
+                    call.respond(HttpStatusCode.Created,"done")
+
+                } catch (e: Exception) {
+
+                    call.respond(HttpStatusCode.BadRequest,"Error Occurred")
+                    println(e.message)
+
+                }
+            }
         }
     }
 }
