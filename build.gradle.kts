@@ -35,5 +35,9 @@ dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
 
     implementation("org.litote.kmongo:kmongo-coroutine:4.5.0")
-//    implementation("org.mongodb:mongodb-driver-sync:4.4.1")
+    implementation("org.mongodb:mongodb-driver-sync:4.4.1")
+
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.5.1")
+    implementation("org.mongodb:bson-kotlinx:4.11.0")
+
 }
