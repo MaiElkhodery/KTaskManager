@@ -14,6 +14,7 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.reactive.collect
 import kotlinx.coroutines.withContext
 import org.litote.kmongo.coroutine.toList
 
@@ -48,26 +49,45 @@ fun Route.taskRoute() {
 
             } catch (e: Exception) {
 
-                call.respond(HttpStatusCode.BadRequest,"Error Occurred")
+                call.respond(HttpStatusCode.BadRequest, "Error Occurred")
                 println(e.message)
 
             }
         }
         post {
-            withContext(Dispatchers.IO){
+            withContext(Dispatchers.IO) {
                 try {
 
                     val task = call.receive<TaskRequest>()
                     taskRepo.add(task)
-                    call.respond(HttpStatusCode.Created,"done")
+                    call.respond(HttpStatusCode.Created, "done")
 
                 } catch (e: Exception) {
 
-                    call.respond(HttpStatusCode.BadRequest,"Error Occurred")
+                    call.respond(HttpStatusCode.BadRequest, "Error Occurred")
                     println(e.message)
 
                 }
             }
+        }
+
+        delete("/{id}") {
+
+            try {
+                val id = call.parameters["id"]
+                if (id != null) {
+                    val deletedTask = taskRepo.delete(id)
+                    deletedTask?.collect {
+                        call.respond(HttpStatusCode.OK, "${it.title} Task is deleted")
+                    }
+                } else
+                    call.respond(HttpStatusCode.BadRequest)
+
+            } catch (e: Exception) {
+                call.respond(HttpStatusCode.BadRequest, "Error Occurred")
+                println(e.message)
+            }
+
         }
     }
 }
