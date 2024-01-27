@@ -7,6 +7,7 @@ import com.mongodb.client.model.Filters
 import com.mongodb.reactivestreams.client.FindPublisher
 import org.bson.types.ObjectId
 import org.litote.kmongo.reactivestreams.getCollection
+import org.reactivestreams.Publisher
 
 class TaskRepository : TaskInterface {
 
@@ -33,9 +34,9 @@ class TaskRepository : TaskInterface {
         )
     }
 
-    override suspend fun delete(id: ObjectId) {
+    override suspend fun delete(id: String): Publisher<Task>? {
 
-        collection?.deleteOne(
+        return collection?.findOneAndDelete(
             Filters.eq(
                 ID, id
             )
