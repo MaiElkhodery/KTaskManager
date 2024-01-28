@@ -1,17 +1,22 @@
 package com.Kmongo.data
 
 import com.Kmongo.utils.TASK_DB
+import com.mongodb.reactivestreams.client.MongoDatabase
 import org.litote.kmongo.reactivestreams.KMongo
 
 
 object Database {
 
-    fun getDatabase(): com.mongodb.reactivestreams.client.MongoDatabase? {
+    private var mongoDatabase: MongoDatabase? = null
 
-        val client = KMongo.createClient()
-
-
-        return client.getDatabase(TASK_DB)
+    fun getDatabase(): MongoDatabase {
+        synchronized(this) {
+            if (mongoDatabase == null) {
+                val client = KMongo.createClient()
+                mongoDatabase = client.getDatabase(TASK_DB)
+            }
+            return mongoDatabase!!
+        }
     }
 
 }
