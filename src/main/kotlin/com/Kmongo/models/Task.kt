@@ -4,7 +4,6 @@ import kotlinx.serialization.Serializable
 import org.bson.BsonType
 import org.bson.codecs.pojo.annotations.BsonId
 import org.bson.codecs.pojo.annotations.BsonRepresentation
-import org.bson.types.ObjectId
 
 
 @Serializable

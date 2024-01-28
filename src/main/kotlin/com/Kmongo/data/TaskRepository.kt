@@ -11,9 +11,9 @@ import org.reactivestreams.Publisher
 
 class TaskRepository : TaskInterface {
 
-    private val collection = Database.getDatabase()?.getCollection<Task>()
+    private val taskCollection = Database.getDatabase().getCollection<Task>()
     override suspend fun add(task: TaskRequest) {
-        val result = collection?.insertOne(
+        taskCollection.insertOne(
             Task(
                 _id = ObjectId().toHexString(),
                 title = task.title,
@@ -28,7 +28,7 @@ class TaskRepository : TaskInterface {
 
     override suspend fun update(updatedTask: Task): Publisher<Task>? {
 
-        return collection?.findOneAndReplace(
+        return taskCollection.findOneAndReplace(
             Filters.eq(ID, updatedTask._id),
             updatedTask
         )
@@ -36,7 +36,7 @@ class TaskRepository : TaskInterface {
 
     override suspend fun delete(id: String): Publisher<Task>? {
 
-        return collection?.findOneAndDelete(
+        return taskCollection.findOneAndDelete(
             Filters.eq(
                 ID, id
             )
@@ -44,23 +44,23 @@ class TaskRepository : TaskInterface {
     }
 
     override suspend fun get(): FindPublisher<Task>? {
-        return collection?.find()
+        return taskCollection.find()
     }
 
     override suspend fun get(priority: Priority): FindPublisher<Task>? {
-        return collection?.find(
+        return taskCollection.find(
             Filters.eq(Task::priority.name, priority.name)
         )
     }
 
     override suspend fun get(status: Status): FindPublisher<Task>? {
-        return collection?.find(
+        return taskCollection.find(
             Filters.eq(STATUS, status.name)
         )
     }
 
     override suspend fun get(priority: Priority, status: Status): FindPublisher<Task>? {
-        return collection?.find(
+        return taskCollection.find(
             Filters.and(
                 Filters.eq(PRIORITY, priority.name),
                 Filters.eq(STATUS, status.name)
