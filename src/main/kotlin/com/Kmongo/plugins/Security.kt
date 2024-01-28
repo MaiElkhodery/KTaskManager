@@ -1,42 +1,34 @@
 package com.Kmongo.plugins
 
+import com.Kmongo.utils.JWTConfig
+import com.auth0.jwt.JWT
+import com.auth0.jwt.algorithms.Algorithm
+import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
+import io.ktor.server.auth.jwt.*
 import io.ktor.server.response.*
-import io.ktor.server.routing.*
 
 fun Application.configureSecurity() {
     authentication {
-        basic(name = "myauth1") {
-            realm = "Ktor Server"
-            validate { credentials ->
-                if (credentials.name == credentials.password) {
-                    UserIdPrincipal(credentials.name)
+        jwt(name = "jwt-auth") {
+            realm = JWTConfig.REALM
+            verifier(
+                JWT
+                    .require(Algorithm.HMAC256(JWTConfig.SECRET))
+                    .withAudience(JWTConfig.AUDIENCE)
+                    .withIssuer(JWTConfig.ISSUER)
+                    .build()
+            )
+            validate { credential ->
+                if (!credential.payload.getClaim("email").asString().isNullOrEmpty()) {
+                    JWTPrincipal(credential.payload)
                 } else {
                     null
                 }
             }
-        }
-    
-        form(name = "myauth2") {
-            userParamName = "user"
-            passwordParamName = "password"
-            challenge {
-                /**/
-            }
-        }
-    }
-    routing {
-        authenticate("myauth1") {
-            get("/protected/route/basic") {
-                val principal = call.principal<UserIdPrincipal>()!!
-                call.respondText("Hello ${principal.name}")
-            }
-        }
-        authenticate("myauth2") {
-            get("/protected/route/form") {
-                val principal = call.principal<UserIdPrincipal>()!!
-                call.respondText("Hello ${principal.name}")
+            challenge { defaultScheme, realm ->
+                call.respond(HttpStatusCode.Unauthorized, "Token is not valid or has expired")
             }
         }
     }
