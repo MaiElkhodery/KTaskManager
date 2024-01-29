@@ -1,5 +1,6 @@
 package com.Kmongo
 
+import com.Kmongo.data.Database
 import com.Kmongo.plugins.*
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
@@ -14,4 +15,7 @@ fun Application.module() {
     configureSerialization()
     configureSecurity()
     configureRouting()
+    environment.monitor.subscribe(ApplicationStopping) {
+        Database.mongoClient!!.close()
+    }
 }
