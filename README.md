@@ -8,19 +8,19 @@
  - **Login API**: Authenticate users securely using the login API.
  - **Signup API**: Allow users to register with the signup API.
 
-### + Task Management API:
-####  - **Create**: Authenticated users can create new tasks.
-####  - **Delete**: Authenticated users can delete tasks by ID.
-####  - **Update**: Authenticated users can update task details.
-####  - **Get**: Retrieve a list of all tasks and filtering based on priority, status, or both.
++ Task Management API:
+  - **Create**: Authenticated users can create new tasks.
+  - **Delete**: Authenticated users can delete tasks by ID.
+  - **Update**: Authenticated users can update task details.
+  - **Get**: Retrieve a list of all tasks and filtering based on priority, status, or both.
 
-### + Security:
-####  - **JWT Authentication**: Utilize JSON Web Tokens for secure user authentication.
-####  - **Token-Based Access**: Ensure authenticated access to the Tasks API.
+ + Security:
+  - **JWT Authentication**: Utilize JSON Web Tokens for secure user authentication.
+  - **Token-Based Access**: Ensure authenticated access to the Tasks API.
 
-### + Database Connectivity:
-####  - **KMongo Integration**: Seamlessly integrate KMongo for MongoDB connectivity.
-####  - **Async Driver**: Leverage asynchronous drivers for efficient database operations.
+ + Database Connectivity:
+  - **KMongo Integration**: Seamlessly integrate KMongo for MongoDB connectivity.
+  - **Async Driver**: Leverage asynchronous drivers for efficient database operations.
 
 ## Getting Started
 
