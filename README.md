@@ -26,6 +26,7 @@
  **2. Configure Database**:
    - Ensure MongoDB is installed and running locally.
    - Update database configurations in application.conf
+
  **3. Run the Application**
  **4. Access APIs**:
     - Login: POST /login
