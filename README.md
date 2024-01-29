@@ -22,13 +22,13 @@
   - **Async Driver**: Leverage asynchronous drivers for efficient database operations.
 
 ## Getting Started
- **- Clone the Repository**
- **- Configure Database**:
+ - **Clone the Repository**
+ - **Configure Database**:
    + Ensure MongoDB is installed and running locally.
    + Update database configurations in application.conf
 
- **- Run the Application**
- **- Access APIs**:
-    + Login: POST /login
-    + Signup: POST /signup
-    + Tasks: GET /tasks, POST /tasks, PUT /tasks, DELETE /tasks/{id}
+ - **Run the Application**
+ - **Access APIs**:
+   + Login: POST /login
+   + Signup: POST /signup
+   + Tasks: GET /tasks, POST /tasks, PUT /tasks, DELETE /tasks/{id}
