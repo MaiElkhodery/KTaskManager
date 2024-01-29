@@ -6,8 +6,6 @@ import java.util.*
 const val TASK_DB = "task_manger"
 const val PRIORITY = "priority"
 const val STATUS = "status"
-const val ID = "_id"
-
 fun validateUsername(name: String) {
     if (name.length < 3) {
         throw IllegalArgumentException("Invalid user name: must be at least 3 characters")
