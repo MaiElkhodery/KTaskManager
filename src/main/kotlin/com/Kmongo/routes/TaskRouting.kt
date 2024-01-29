@@ -11,12 +11,11 @@ import com.mongodb.reactivestreams.client.FindPublisher
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
+import io.ktor.server.auth.jwt.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.reactive.collect
-import kotlinx.coroutines.withContext
 import org.litote.kmongo.coroutine.toList
 
 fun Route.taskRoute() {
@@ -25,6 +24,8 @@ fun Route.taskRoute() {
         route("/tasks") {
 
             get {
+
+                val userId = call.principal<JWTPrincipal>()!!.payload.getClaim("id").asString()
 
                 try {
 
@@ -35,71 +36,81 @@ fun Route.taskRoute() {
 
                         taskRepo.get(
                             priority = Priority.valueOf(priorityParam),
-                            status = Status.valueOf(statusParam)
+                            status = Status.valueOf(statusParam),
+                            userId = userId
                         )
 
                     } else if (priorityParam != null) {
 
-                        taskRepo.get(priority = Priority.valueOf(priorityParam))
+                        taskRepo.get(priority = Priority.valueOf(priorityParam), userId = userId)
 
                     } else if (statusParam != null) {
 
-                        taskRepo.get(status = Status.valueOf(statusParam))
+                        taskRepo.get(status = Status.valueOf(statusParam), userId = userId)
 
                     } else {
 
-                        taskRepo.get()
+                        taskRepo.get(userId)
 
                     }
-                    if (tasks != null) {
-
+                    tasks?.collect {
                         call.respond(tasks.limit(20).toList())
-
-                    } else
-                        call.respond("nothing matched")
+                    } ?: throw IllegalArgumentException("No tasks found")
 
                 } catch (e: Exception) {
 
-                    call.respond(HttpStatusCode.BadRequest, "Error Occurred")
-                    println(e.message)
+                    call.respond(HttpStatusCode.BadRequest, e.message.toString())
 
                 }
             }
             post {
-                withContext(Dispatchers.IO) {
-                    try {
 
-                        val task = call.receive<TaskRequest>()
-                        taskRepo.add(task)
-                        call.respond(HttpStatusCode.Created, "done")
+                try {
 
-                    } catch (e: Exception) {
+                    val task = call.receive<TaskRequest>()
+                    val principal = call.principal<JWTPrincipal>()
 
-                        call.respond(HttpStatusCode.BadRequest, "Error Occurred")
-                        println(e.message)
 
+                    val userId = principal!!.payload.getClaim("id").asString()
+                    val result = taskRepo.add(task, userId)
+                    result?.collect {
+                        if (it.wasAcknowledged())
+                            call.respond(HttpStatusCode.Created, "${task.title} is Created")
+                        else
+                            call.respond(HttpStatusCode.NotImplemented, "Try Again")
                     }
+
+                } catch (e: Exception) {
+
+                    call.respond(HttpStatusCode.BadRequest, e.message.toString())
+
                 }
+
             }
 
             delete("/{id}") {
 
                 try {
-                    val id = call.parameters["id"]
-                    if (id != null) {
 
-                        val deletedTask = taskRepo.delete(id)
-                        deletedTask?.collect {
-                            call.respond(HttpStatusCode.OK, "${it.title} Task is deleted")
+                    val userId = call.principal<JWTPrincipal>()!!.payload.getClaim("id").asString()
+                    val taskId = call.parameters["id"]
+                    println("task id:$taskId")
+                    if (taskId != null) {
+
+                        val deletedTask = taskRepo.delete(
+                            taskId = taskId,
+                            userId = userId
+                        )
+                        deletedTask?.collect { task ->
+                            call.respond(HttpStatusCode.OK, "${task.title} Task is deleted")
                         }
 
                     } else
-                        call.respond(HttpStatusCode.BadRequest)
+                        call.respond("Invalid Task ID")
 
                 } catch (e: Exception) {
 
-                    call.respond(HttpStatusCode.BadRequest, "Error Occurred")
-                    println(e.message)
+                    call.respond(HttpStatusCode.BadRequest, e.message.toString())
 
                 }
 
@@ -108,8 +119,9 @@ fun Route.taskRoute() {
             put {
                 try {
 
+                    val userId = call.principal<JWTPrincipal>()!!.payload.getClaim("id").asString()
                     val task = call.receive<Task>()
-                    val updatedTask = taskRepo.update(task)
+                    val updatedTask = taskRepo.update(task, userId)
 
                     updatedTask?.collect {
                         call.respond(HttpStatusCode.OK, "${it.title} Task is Updated")
@@ -117,8 +129,7 @@ fun Route.taskRoute() {
 
                 } catch (e: Exception) {
 
-                    call.respond(HttpStatusCode.BadRequest, "Error Occurred")
-                    println(e.message)
+                    call.respond(HttpStatusCode.BadRequest, e.message.toString())
 
                 }
             }
