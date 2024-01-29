@@ -24,20 +24,16 @@ fun Route.userRoute() {
             validateEmail(user.email)
             validatePassword(user.password)
 
-            val getUser = userRepo.get(
+            userRepo.get(
                 email = user.email,
                 password = user.password
-            )
-            if (getUser != null) {
-
-                val token = JWTConfig.getToken(user.email)
+            )?.collect { loggedUser ->
+                println("user id: ${loggedUser.id}")
+                val token = JWTConfig.getToken(loggedUser.id)
                 call.respond(mapOf("token" to token))
 
-            } else {
+            } ?: throw IllegalArgumentException("Invalid email or password")
 
-                throw IllegalArgumentException("Invalid email or password")
-
-            }
         } catch (e: Exception) {
 
             call.respond(e.message.toString())
@@ -54,14 +50,14 @@ fun Route.userRoute() {
             validateEmail(user.email)
             validatePassword(user.password)
 
-            userRepo.add(user)?.collect {
-                println("insertion result: ${it.insertedId}")
-                println("insertion result: ${it.wasAcknowledged()}")
+            val userId = userRepo.add(user)
+
+            if (userId != null) {
+                val token = JWTConfig.getToken(userId)
+                call.respond(mapOf("token" to token))
+            } else {
+                throw IllegalArgumentException("Failed to retrieve insertedId after user creation")
             }
-
-            val token = JWTConfig.getToken(user.email)
-
-            call.respond(mapOf("token" to token))
 
         } catch (e: Exception) {
             call.respond(e.message.toString())
