@@ -7,7 +7,7 @@ import com.mongodb.reactivestreams.client.FindPublisher
 import org.reactivestreams.Publisher
 
 interface UserInterface {
-    suspend fun add(user: SignupRequest):Publisher<InsertOneResult>?
+    suspend fun add(user: SignupRequest):String?
     suspend fun updateUsername(username: String, id: String)
     suspend fun updateEmail(email: String, id: String)
 
