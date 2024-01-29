@@ -11,6 +11,7 @@ data class Task(
     @BsonId
     @BsonRepresentation(BsonType.OBJECT_ID)
     val _id: String? = null,
+    val userId: String,
     var title: String,
     var description: String,
     var startDate: String,
