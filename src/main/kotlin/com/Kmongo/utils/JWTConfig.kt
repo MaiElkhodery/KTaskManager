@@ -15,11 +15,11 @@ object JWTConfig {
     val AUDIENCE = config.property("jwt.audience").getString()
     val REALM = config.property("jwt.realm").getString()
 
-    fun getToken(email: String): String {
+    fun getToken(id: String): String {
         return JWT.create()
             .withAudience(AUDIENCE)
             .withIssuer(ISSUER)
-            .withClaim("email", email)
+            .withClaim("id", id)
             .withExpiresAt(Date(System.currentTimeMillis() + 600000))
             .sign(Algorithm.HMAC256(SECRET))
     }
