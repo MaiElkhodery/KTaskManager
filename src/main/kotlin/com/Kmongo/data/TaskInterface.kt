@@ -4,18 +4,19 @@ import com.Kmongo.models.Task
 import com.Kmongo.models.TaskRequest
 import com.Kmongo.utils.Priority
 import com.Kmongo.utils.Status
+import com.mongodb.client.result.InsertOneResult
 import com.mongodb.reactivestreams.client.FindPublisher
 import org.reactivestreams.Publisher
 
 interface TaskInterface {
-    suspend fun add(task: TaskRequest)
-    suspend fun update(updatedTask: Task):Publisher<Task>?
+    suspend fun add(task: TaskRequest,userId:String):Publisher<InsertOneResult>?
+    suspend fun update(updatedTask: Task,userId:String):Publisher<Task>?
 
-    suspend fun delete(id: String): Publisher<Task>?
-    suspend fun get(): FindPublisher<Task>?
+    suspend fun delete(taskId: String,userId:String): Publisher<Task>?
+    suspend fun get(userId: String): FindPublisher<Task>?
 
-    suspend fun get(priority: Priority): FindPublisher<Task>?
-    suspend fun get(status: Status): FindPublisher<Task>?
-    suspend fun get(priority: Priority, status: Status): FindPublisher<Task>?
+    suspend fun get(priority: Priority,userId: String): FindPublisher<Task>?
+    suspend fun get(status: Status,userId: String): FindPublisher<Task>?
+    suspend fun get(priority: Priority, status: Status,userId: String): FindPublisher<Task>?
 
 }
