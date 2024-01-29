@@ -14,22 +14,22 @@
   - **Update**: Authenticated users can update task details.
   - **Get**: Retrieve a list of all tasks and filtering based on priority, status, or both.
 
- + Security:
++ Security:
   - **JWT Authentication**: Utilize JSON Web Tokens for secure user authentication.
   - **Token-Based Access**: Ensure authenticated access to the Tasks API.
 
- + Database Connectivity:
++ Database Connectivity:
   - **KMongo Integration**: Seamlessly integrate KMongo for MongoDB connectivity.
   - **Async Driver**: Leverage asynchronous drivers for efficient database operations.
 
 ## Getting Started
 
-#### **1. Clone the Repository**
-#### **1. Configure Database**:
-#####  - Ensure MongoDB is installed and running locally.
-#####  - Update database configurations in application.conf
-#### **1. Run the Application**
-#### **1. Access APIs**:
-#####  - Login: POST /login
-#####  - Signup: POST /signup
-#####  - Tasks: GET /tasks, POST /tasks, PUT /tasks, DELETE /tasks/{id}
+**1. Clone the Repository**
+ **1. Configure Database**:
+  - Ensure MongoDB is installed and running locally.
+  - Update database configurations in application.conf
+ **1. Run the Application**
+ **1. Access APIs**:
+  - Login: POST /login
+  - Signup: POST /signup
+  - Tasks: GET /tasks, POST /tasks, PUT /tasks, DELETE /tasks/{id}
