@@ -4,8 +4,8 @@
 
 ## Features:
 + ### User Authentication:
- - **Login API**: Authenticate users securely using the login API.
- - **Signup API**: Allow users to register with the signup API.
+   - **Login API**: Authenticate users securely using the login API.
+   - **Signup API**: Allow users to register with the signup API.
 
 + ### Task Management API:
   - **Create**: Authenticated users can create new tasks.
